@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OFF/BEAT — INTERNAL BRIEF #001</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,400;0,9..40,500;1,9..40,200&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #FF2A2A;
+  --orange: #FF5F1F;
+  --black: #0A0A0A;
+  --surface: #111111;
+  --surface2: #181818;
+  --white: #F0EDE8;
+  --muted: rgba(240,237,232,0.4);
+  --border: rgba(240,237,232,0.07);
+  --border-hot: rgba(255,42,42,0.25);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CURSOR ── */
+#cur { position:fixed; width:8px; height:8px; background:var(--red); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:transform .1s, opacity .2s; }
+#cur-ring { position:fixed; width:36px; height:36px; border:1px solid rgba(255,42,42,.35); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .3s, height .3s; }
+body:not(:hover) #cur, body:not(:hover) #cur-ring { opacity:0; }
+
+/* ── GRAIN ── */
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9500;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  opacity:.4;
+}
+
+/* ── DOCUMENT HEADER ── */
+#doc-header {
+  position: fixed; top:0; left:0; right:0; z-index:800;
+  display:flex; justify-content:space-between; align-items:center;
+  padding: 14px clamp(20px,5vw,80px);
+  border-bottom: 1px solid var(--border);
+  background: rgba(10,10,10,.92);
+  backdrop-filter: blur(12px);
+}
+.doc-meta { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.2em; color:var(--muted); }
+.doc-meta strong { color:var(--red); }
+.doc-status { display:flex; align-items:center; gap:8px; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.15em; color:var(--muted); }
+.doc-status::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--red); animation: blink 2s ease infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ── SECTION SHARED ── */
+section { padding: clamp(90px,14vh,180px) clamp(20px,7vw,120px); position:relative; }
+.s-label { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.3em; color:var(--red); text-transform:uppercase; display:block; margin-bottom:20px; }
+.s-rule { width:100%; height:1px; background:linear-gradient(90deg,transparent,var(--border-hot),transparent); margin:0; }
+
+/* ── REVEAL ── */
+.rv { opacity:0; transform:translateY(28px); transition:opacity .7s ease, transform .7s ease; }
+.rv.in { opacity:1; transform:none; }
+.rv-left { opacity:0; transform:translateX(-28px); transition:opacity .7s ease, transform .7s ease; }
+.rv-left.in { opacity:1; transform:none; }
+
+/* ══════════════════════════════════════════
+   SECTION 0 — PROVOCATION (PRE-HERO)
+══════════════════════════════════════════ */
+#provocation {
+  min-height: 100vh;
+  display:flex; flex-direction:column; justify-content:center;
+  padding-top: 80px;
+  overflow:hidden;
+}
+
+.prov-stamp {
+  font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.3em;
+  color:var(--red); margin-bottom:clamp(40px,8vh,80px);
+  opacity:0; animation:fadeup .6s ease .2s forwards;
+}
+
+.prov-statement {
+  font-family:'Anton',sans-serif;
+  font-size: clamp(42px,8.5vw,124px);
+  line-height:.93; letter-spacing:-.02em;
+  max-width:1100px;
+  opacity:0; animation:fadeup .8s ease .5s forwards;
+}
+.prov-statement em { color:var(--red); font-style:normal; }
+
+.prov-attr {
+  margin-top: clamp(40px,7vh,80px);
+  display:flex; align-items:center; gap:24px;
+  opacity:0; animation:fadeup .6s ease 1s forwards;
+}
+.prov-dash { width:40px; height:1px; background:var(--red); }
+.prov-name { font-family:'Space Mono',monospace; font-size:12px; letter-spacing:.2em; color:var(--muted); }
+.prov-name strong { color:var(--white); }
+
+.prov-scroll {
+  position:absolute; bottom:36px; left:clamp(20px,7vw,120px);
+  font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.25em;
+  color:rgba(240,237,232,.2);
+  animation:fadeup .6s ease 1.6s both, bob 3s ease 2.5s infinite;
+}
+@keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+
+/* Ambient glow */
+.glow-orb {
+  position:absolute; border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle, rgba(255,42,42,.1) 0%, transparent 70%);
+}
+.glow-orb.a { width:700px;height:700px;top:-200px;right:-200px; animation:drift 8s ease-in-out infinite alternate; }
+.glow-orb.b { width:400px;height:400px;bottom:-100px;left:-100px; animation:drift 12s ease-in-out infinite alternate-reverse; }
+@keyframes drift { from{transform:translate(0,0)} to{transform:translate(30px,30px)} }
+
+@keyframes fadeup { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+
+/* ══════════════════════════════════════════
+   MARQUEE
+══════════════════════════════════════════ */
+.marquee-wrap { overflow:hidden; background:var(--red); padding:16px 0; }
+.marquee-track { display:flex; animation:marquee 20s linear infinite; white-space:nowrap; }
+.marquee-track:hover { animation-play-state:paused; }
+.m-item { font-family:'Anton',sans-serif; font-size:clamp(13px,1.8vw,18px); letter-spacing:.18em; color:var(--black); padding:0 clamp(24px,3vw,48px); }
+.m-dot { color:rgba(0,0,0,.3); }
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* ══════════════════════════════════════════
+   SECTION 1 — WHO IS FILING THIS
+══════════════════════════════════════════ */
+#identity { background:var(--black); }
+
+.identity-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:2px;
+  margin-top:48px;
+}
+
+.id-block {
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:clamp(28px,4vw,48px);
+  position:relative; overflow:hidden;
+  transition:border-color .3s;
+}
+.id-block:hover { border-color:var(--border-hot); }
+.id-block::after {
+  content:''; position:absolute; bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--red),transparent);
+  transform:scaleX(0); transform-origin:center;
+  transition:transform .5s ease;
+}
+.id-block:hover::after { transform:scaleX(1); }
+
+.id-num { font-family:'Space Mono',monospace; font-size:10px; color:var(--red); letter-spacing:.2em; margin-bottom:14px; }
+.id-title { font-family:'Anton',sans-serif; font-size:clamp(20px,2.5vw,34px); margin-bottom:10px; line-height:1.1; }
+.id-body { font-size:14px; line-height:1.75; color:var(--muted); font-weight:300; }
+.id-body a { color:var(--white); text-decoration:none; border-bottom:1px solid var(--border-hot); transition:color .2s, border-color .2s; }
+.id-body a:hover { color:var(--red); border-color:var(--red); }
+.id-stat { margin-top:16px; font-family:'Space Mono',monospace; font-size:11px; color:var(--red); letter-spacing:.12em; }
+
+.id-large { grid-column: 1 / -1; }
+
+/* Languages pill row */
+.lang-pills { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+.lang-pill {
+  font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.15em;
+  border:1px solid var(--border-hot); padding:6px 14px; color:var(--white);
+  transition:background .2s, color .2s;
+}
+.lang-pill:hover { background:var(--red); border-color:var(--red); color:var(--black); }
+
+/* ══════════════════════════════════════════
+   SECTION 2 — VIDEO
+══════════════════════════════════════════ */
+#video-sec { background:var(--surface); }
+
+.video-wrap {
+  max-width:860px; position:relative;
+}
+.video-outer {
+  position:relative; border-radius:2px; overflow:hidden;
+  border:1px solid var(--border); aspect-ratio:16/9;
+  background:#0d0d0d;
+  transition:transform .5s ease, box-shadow .5s ease;
+}
+.video-outer:hover {
+  transform:perspective(1400px) rotateY(-1.5deg) rotateX(.5deg) scale(1.01);
+  box-shadow:-24px 24px 80px rgba(255,42,42,.12), 0 0 60px rgba(255,95,31,.07);
+}
+.video-outer iframe { width:100%;height:100%;border:none;display:block; }
+.video-glow {
+  position:absolute; inset:-4px; border-radius:4px; z-index:-1;
+  background:linear-gradient(135deg,rgba(255,42,42,.18),rgba(255,95,31,.1));
+  filter:blur(24px);
+}
+.video-placeholder {
+  width:100%;height:100%; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:20px; padding:40px; text-align:center;
+}
+.vp-ring { width:64px;height:64px;border-radius:50%;border:1.5px solid rgba(255,42,42,.5);display:flex;align-items:center;justify-content:center; }
+.vp-ring::after { content:'';border-style:solid;border-width:10px 0 10px 20px;border-color:transparent transparent transparent var(--red);margin-left:5px; }
+.vp-label { font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--muted); }
+.vp-label strong { display:block;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:rgba(240,237,232,.6);margin-bottom:6px;letter-spacing:0; }
+.video-cap { margin-top:20px;font-size:14px;color:var(--muted);font-style:italic;font-weight:300; }
+
+/* ══════════════════════════════════════════
+   SECTION 3 — LIVE TREND RADAR (THE WEAPON)
+══════════════════════════════════════════ */
+#radar-sec { background:var(--black); }
+
+.radar-intro {
+  max-width:680px; margin-bottom:56px;
+}
+.radar-intro p { font-size:clamp(15px,1.8vw,18px); color:var(--muted); line-height:1.75; font-weight:300; }
+.radar-intro p strong { color:var(--white); font-weight:500; }
+
+.radar-box {
+  background:var(--surface); border:1px solid var(--border);
+  max-width:920px; position:relative; overflow:hidden;
+}
+.radar-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 24px; border-bottom:1px solid var(--border);
+  background:var(--surface2);
+}
+.radar-header-left { display:flex; align-items:center; gap:12px; }
+.radar-dot { width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 2s infinite; }
+.radar-title { font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--white); }
+.radar-subtitle { font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.1em; }
+
+.radar-controls { padding:24px; display:flex; gap:12px; flex-wrap:wrap; border-bottom:1px solid var(--border); }
+.radar-btn {
+  font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.15em;
+  text-transform:uppercase; padding:10px 18px; background:transparent;
+  border:1px solid var(--border); color:var(--muted); cursor:none;
+  transition:all .2s; user-select:none;
+}
+.radar-btn:hover, .radar-btn.active { border-color:var(--red); color:var(--red); background:rgba(255,42,42,.06); }
+
+.run-btn {
+  font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.2em;
+  text-transform:uppercase; padding:10px 28px;
+  background:var(--red); border:none; color:var(--black);
+  cursor:none; font-weight:700; transition:opacity .2s, transform .1s;
+  margin-left:auto;
+}
+.run-btn:hover { opacity:.85; }
+.run-btn:active { transform:scale(.97); }
+.run-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+.radar-output { padding:28px 24px; min-height:340px; position:relative; }
+.radar-empty {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  height:280px; gap:12px; color:var(--muted); text-align:center;
+}
+.radar-empty-icon { font-family:'Space Mono',monospace;font-size:28px;color:var(--border-hot); }
+.radar-empty p { font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.15em;line-height:1.8; }
+
+.radar-loading {
+  display:none; flex-direction:column; align-items:center; justify-content:center;
+  height:280px; gap:20px;
+}
+.radar-loading.show { display:flex; }
+.radar-empty.hide { display:none; }
+
+.loading-bar {
+  width:200px; height:2px; background:var(--border); overflow:hidden;
+}
+.loading-fill {
+  height:100%; width:0%; background:var(--red); animation:load-anim 2s ease forwards;
+}
+@keyframes load-anim { to{width:100%} }
+.loading-txt { font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--muted); }
+.loading-txt span { color:var(--red); }
+
+.signals-list { display:flex; flex-direction:column; gap:0; }
+.signal-item {
+  display:grid; grid-template-columns:28px 1fr auto;
+  gap:20px; align-items:start;
+  padding:24px 0; border-bottom:1px solid var(--border);
+  opacity:0; transform:translateX(-16px);
+  transition:opacity .5s ease, transform .5s ease;
+  cursor:default;
+}
+.signal-item:last-child { border-bottom:none; }
+.signal-item.show { opacity:1; transform:none; }
+.signal-item:hover { background:rgba(255,42,42,.02); margin:0 -24px; padding:24px; }
+
+.signal-num { font-family:'Space Mono',monospace;font-size:11px;color:var(--red);padding-top:3px; }
+.signal-body {}
+.signal-name { font-family:'Anton',sans-serif;font-size:clamp(18px,2.2vw,28px);line-height:1.1;margin-bottom:8px; }
+.signal-desc { font-size:13px;color:var(--muted);line-height:1.7;font-weight:300; }
+.signal-desc strong { color:var(--white);font-weight:500; }
+.signal-meta { font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--red);margin-top:10px; }
+.signal-heat {
+  display:flex; flex-direction:column; align-items:flex-end; gap:4px; padding-top:4px;
+}
+.heat-label { font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--muted); }
+.heat-bar { width:56px;height:3px;background:var(--border);overflow:hidden;border-radius:2px; }
+.heat-fill { height:100%; background:linear-gradient(90deg,var(--orange),var(--red)); border-radius:2px; }
+
+.radar-footer {
+  padding:14px 24px; border-top:1px solid var(--border); background:var(--surface2);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.radar-footer-txt { font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted); }
+.radar-footer-txt strong { color:var(--red); }
+
+/* ══════════════════════════════════════════
+   SECTION 4 — THE BRIEF (WHAT I'D BUILD)
+══════════════════════════════════════════ */
+#brief-sec { background:var(--surface); }
+
+.brief-document {
+  max-width:820px;
+  border:1px solid var(--border);
+  background:var(--surface2);
+}
+.brief-doc-header {
+  padding:20px 32px; border-bottom:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center;
+  background:var(--surface);
+}
+.brief-doc-title { font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--white); }
+.brief-doc-date { font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.12em; }
+
+.brief-body { padding:clamp(28px,4vw,52px); }
+
+.brief-row {
+  display:grid; grid-template-columns:140px 1fr;
+  gap:24px; padding:24px 0; border-bottom:1px solid var(--border);
+  opacity:0; transform:translateY(16px);
+  transition:opacity .6s ease, transform .6s ease;
+}
+.brief-row:last-child { border-bottom:none; }
+.brief-row.in { opacity:1; transform:none; }
+
+.brief-field { font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--muted);padding-top:3px; }
+.brief-value { font-size:clamp(14px,1.6vw,16px);line-height:1.75;color:var(--white);font-weight:300; }
+.brief-value strong { color:var(--red);font-weight:500; }
+.brief-value .tag {
+  display:inline-block; font-family:'Space Mono',monospace;font-size:9px;
+  letter-spacing:.12em; border:1px solid var(--border-hot);
+  padding:4px 10px; color:var(--orange); margin:4px 4px 0 0;
+}
+.brief-timeline {
+  display:flex; flex-direction:column; gap:0;
+}
+.brief-tl-item {
+  display:flex; gap:20px; padding:14px 0; border-bottom:1px solid var(--border);
+  transition:color .2s;
+}
+.brief-tl-item:last-child { border-bottom:none; }
+.brief-tl-item:hover .brief-tl-title { color:var(--red); }
+.brief-tl-day { font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--red);min-width:56px;padding-top:2px; }
+.brief-tl-title { font-family:'Anton',sans-serif;font-size:clamp(16px,2vw,22px);margin-bottom:4px; }
+.brief-tl-body { font-size:13px;color:var(--muted);line-height:1.6;font-weight:300; }
+
+/* ══════════════════════════════════════════
+   SECTION 5 — PROOF
+══════════════════════════════════════════ */
+#proof-sec { background:var(--black); }
+
+.proof-items { display:flex;flex-direction:column;gap:0;margin-top:56px; }
+
+.proof-row {
+  display:grid; grid-template-columns:1fr auto;
+  gap:24px; padding:36px 0; border-bottom:1px solid var(--border);
+  text-decoration:none; color:inherit; position:relative;
+  opacity:0; transform:translateY(20px);
+  transition:opacity .6s ease, transform .6s ease, padding .3s;
+}
+.proof-row:last-child { border-bottom:none; }
+.proof-row.in { opacity:1; transform:none; }
+.proof-row:hover { padding-left:20px; }
+.proof-row::before {
+  content:''; position:absolute; left:0; top:36px; bottom:36px;
+  width:2px; background:var(--red); transform:scaleY(0); transform-origin:top;
+  transition:transform .35s ease;
+}
+.proof-row:hover::before { transform:scaleY(1); }
+
+.proof-name { font-family:'Anton',sans-serif;font-size:clamp(22px,3.5vw,50px);line-height:1.05;margin-bottom:10px; }
+.proof-sub { font-size:14px;color:var(--muted);font-weight:300;line-height:1.65;max-width:600px; }
+.proof-sub .n { color:var(--red);font-weight:500; }
+.proof-link-label { font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--muted);margin-top:14px;display:block; }
+.proof-right { display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding-top:4px; }
+.proof-badge {
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;
+  border:1px solid var(--border-hot);padding:6px 12px;color:var(--orange);
+  white-space:nowrap; transition:background .2s, color .2s;
+}
+.proof-row:hover .proof-badge { background:rgba(255,95,31,.1); }
+.proof-arrow { font-family:'Space Mono',monospace;font-size:14px;color:var(--red);opacity:0;transition:opacity .2s, transform .2s;transform:translateX(-6px); }
+.proof-row:hover .proof-arrow { opacity:1; transform:none; }
+
+/* ══════════════════════════════════════════
+   SECTION 6 — CLOSING
+══════════════════════════════════════════ */
+#closing { min-height:100vh;display:flex;flex-direction:column;justify-content:center;text-align:left;overflow:hidden; }
+
+.closing-glow { position:absolute;width:900px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,42,42,.09) 0%,transparent 70%);bottom:-200px;right:-200px;pointer-events:none;animation:drift 10s ease-in-out infinite alternate; }
+
+.closing-eyebrow { font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.3em;color:var(--red);margin-bottom:clamp(36px,6vh,64px); }
+
+.closing-line1 { font-family:'Anton',sans-serif;font-size:clamp(40px,9vw,132px);line-height:.92;letter-spacing:-.02em;opacity:0;transform:translateY(32px);transition:opacity .8s ease, transform .8s ease; }
+.closing-line2 { font-family:'Anton',sans-serif;font-size:clamp(40px,9vw,132px);line-height:.92;letter-spacing:-.02em;color:var(--red);opacity:0;transform:translateY(32px);transition:opacity .8s ease .15s, transform .8s ease .15s; }
+.closing-line3 { font-family:'Anton',sans-serif;font-size:clamp(40px,9vw,132px);line-height:.92;letter-spacing:-.02em;opacity:0;transform:translateY(32px);transition:opacity .8s ease .3s, transform .8s ease .3s; }
+.closing-line1.in,.closing-line2.in,.closing-line3.in { opacity:1; transform:none; }
+
+.closing-separator { width:60px;height:2px;background:var(--red);margin:clamp(48px,7vh,80px) 0 clamp(32px,5vh,56px); opacity:0;transition:opacity .8s ease .6s, width .8s ease .6s; }
+.closing-separator.in { opacity:1; width:200px; }
+
+.closing-bottom { display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:32px; opacity:0;transition:opacity .8s ease .8s; }
+.closing-bottom.in { opacity:1; }
+
+.closing-sig { font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.15em;color:var(--muted); }
+.closing-sig strong { display:block;font-size:18px;color:var(--white);margin-bottom:4px;letter-spacing:.1em; }
+
+.closing-actions { display:flex;gap:12px;flex-wrap:wrap; }
+.c-btn {
+  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  padding:13px 24px; text-decoration:none; border:1px solid; transition:all .25s;
+}
+.c-btn.primary { border-color:var(--red);color:var(--red); }
+.c-btn.primary:hover { background:var(--red);color:var(--black); }
+.c-btn.ghost { border-color:var(--border);color:var(--muted); }
+.c-btn.ghost:hover { border-color:rgba(240,237,232,.25);color:var(--white); }
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media (max-width:680px) {
+  .identity-grid { grid-template-columns:1fr; }
+  .brief-row { grid-template-columns:1fr; gap:8px; }
+  .proof-row { grid-template-columns:1fr; }
+  .proof-right { flex-direction:row; align-items:center; }
+  .signal-item { grid-template-columns:24px 1fr; }
+  .signal-heat { display:none; }
+  .closing-bottom { flex-direction:column; align-items:flex-start; }
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- ── DOCUMENT HEADER ── -->
+<header id="doc-header">
+  <div class="doc-meta">OFF/BEAT STUDIOS — <strong>INTERNAL BRIEF #001</strong> — CONFIDENTIAL</div>
+  <div class="doc-status">LIVE DOCUMENT</div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     PROVOCATION
+══════════════════════════════════════════ -->
+<section id="provocation">
+  <div class="glow-orb a"></div>
+  <div class="glow-orb b"></div>
+
+  <div class="prov-stamp">A SIGNAL — NOT AN APPLICATION</div>
+
+  <h1 class="prov-statement">
+    INDIAN YOUTH DOESN'T WANT<br>
+    TO BE <em>INSPIRED</em> ANYMORE.<br>
+    THEY WANT TO BE <em>SEEN.</em><br>
+    BRANDS CHASING ASPIRATION<br>
+    ARE <em>ALREADY DEAD.</em>
+  </h1>
+
+  <div class="prov-attr">
+    <div class="prov-dash"></div>
+    <div class="prov-name"><strong>SEHER SIDDIQUI</strong> — FILED FOR: OFF/BEAT STUDIOS · 2026</div>
+  </div>
+
+  <div class="prov-scroll">SCROLL TO READ THE BRIEF ↓</div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="m-item">AI × CULTURE × DISTRIBUTION</span><span class="m-item m-dot">·</span>
+    <span class="m-item">ASCO 2025 PUBLICATION</span><span class="m-item m-dot">·</span>
+    <span class="m-item">STANFORD CODE IN PLACE — SECTION LEADER</span><span class="m-item m-dot">·</span>
+    <span class="m-item">7 LANGUAGES</span><span class="m-item m-dot">·</span>
+    <span class="m-item">TOP 100 / 5,611 TEAMS</span><span class="m-item m-dot">·</span>
+    <span class="m-item">HACKATHON WINNER</span><span class="m-item m-dot">·</span>
+    <span class="m-item">50GB+ CLINICAL ML</span><span class="m-item m-dot">·</span>
+    <span class="m-item">AI × CULTURE × DISTRIBUTION</span><span class="m-item m-dot">·</span>
+    <span class="m-item">ASCO 2025 PUBLICATION</span><span class="m-item m-dot">·</span>
+    <span class="m-item">STANFORD CODE IN PLACE — SECTION LEADER</span><span class="m-item m-dot">·</span>
+    <span class="m-item">7 LANGUAGES</span><span class="m-item m-dot">·</span>
+    <span class="m-item">TOP 100 / 5,611 TEAMS</span><span class="m-item m-dot">·</span>
+    <span class="m-item">HACKATHON WINNER</span><span class="m-item m-dot">·</span>
+    <span class="m-item">50GB+ CLINICAL ML</span><span class="m-item m-dot">·</span>
+  </div>
+</div>
+
+<div class="s-rule"></div>
+
+<!-- ══════════════════════════════════════════
+     IDENTITY
+══════════════════════════════════════════ -->
+<section id="identity">
+  <span class="s-label rv">FILED BY</span>
+
+  <div class="identity-grid">
+
+    <div class="id-block rv" style="transition-delay:.05s">
+      <div class="id-num">CORE ASSET</div>
+      <div class="id-title">THE SPEED</div>
+      <div class="id-body">
+        Most people plan, then build. I build while planning. The Trend Radar below — the working AI tool on this page — I prototyped the architecture in a weekend. The gap between <em>idea</em> and <em>working thing</em> is where I live. It's not hustle. It's how I'm wired.
+      </div>
+      <div class="id-stat">IDEA → PROTOTYPE: MEASURED IN DAYS, NOT MONTHS</div>
+    </div>
+
+    <div class="id-block rv" style="transition-delay:.1s">
+      <div class="id-num">STRATEGIC EDGE</div>
+      <div class="id-title">THE LANGUAGES</div>
+      <div class="id-body">
+        OFF/BEAT's entire opportunity lives in signals that AI trained on English can't read. I can. Not as a translator — as a native cultural participant in each register.
+      </div>
+      <div class="lang-pills">
+        <span class="lang-pill">ARABIC</span>
+        <span class="lang-pill">SPANISH</span>
+        <span class="lang-pill">GERMAN</span>
+        <span class="lang-pill">ENGLISH</span>
+        <span class="lang-pill">HINDI</span>
+        <span class="lang-pill">URDU</span>
+        <span class="lang-pill">MARATHI</span>
+      </div>
+    </div>
+
+    <div class="id-block rv" style="transition-delay:.15s">
+      <div class="id-num">UNFAIR ADVANTAGE</div>
+      <div class="id-title">THE OBSESSION</div>
+      <div class="id-body">
+        I don't stop when things work. I stop when I understand <em>why</em> they work. That's what got my ML research published at ASCO — not cleverness, but refusal to accept a 77% result when 85% was possible with three more weeks of depth.
+      </div>
+      <div class="id-stat">ML ACCURACY: 77% → 85% THROUGH OBSESSIVE ITERATION</div>
+    </div>
+
+    <div class="id-block rv" style="transition-delay:.2s">
+      <div class="id-num">CURRENT POSITION</div>
+      <div class="id-title">WHERE I AM</div>
+      <div class="id-body">
+        B.Tech AI — <a href="https://nmims.edu" target="_blank">NMIMS Mumbai</a>. Batch of 2028. CGPA 8.40.
+        ML Research Intern at <a href="https://www.asco.org/abstracts-presentations/250486" target="_blank">NSUT × ASCO</a>.
+        Section Leader Mentor at <a href="https://codeinplace.stanford.edu" target="_blank">Stanford Code in Place</a> — selected from 2,000+ global applicants.
+        <br><br>Already publishing. Already teaching. Already building.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="s-rule"></div>
+
+<!-- ══════════════════════════════════════════
+     VIDEO
+══════════════════════════════════════════ -->
+<section id="video-sec">
+  <span class="s-label rv">WATCH BEFORE READING FURTHER</span>
+
+  <div class="video-wrap rv">
+    <div class="video-glow"></div>
+    <div class="video-outer" id="vid-outer">
+      <!-- ▼▼▼ REPLACE: uncomment iframe, add your YouTube video ID below ▼▼▼ -->
+      <!--
+      <iframe
+        src="https://www.youtube.com/embed/YOUR_VIDEO_ID?rel=0&modestbranding=1&color=white"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+      -->
+      <div class="video-placeholder">
+        <div class="vp-ring"></div>
+        <div class="vp-label">
+          <strong>Add your video here</strong>
+          <!-- UNCOMMENT THE &lt;IFRAME&gt; ABOVE<br>AND PASTE YOUR YOUTUBE VIDEO ID -->
+        </div>
+      </div>
+    </div>
+    <p class="video-cap">Everything on this page backs up what you hear in that video.</p>
+  </div>
+</section>
+
+<div class="s-rule"></div>
+
+<!-- ══════════════════════════════════════════
+     LIVE TREND RADAR — THE WEAPON
+══════════════════════════════════════════ -->
+<section id="radar-sec">
+  <span class="s-label rv">LIVE TOOL — BUILT FOR THIS APPLICATION</span>
+
+  <h2 class="s-headline rv" style="font-family:'Anton',sans-serif;font-size:clamp(36px,6vw,86px);line-height:1;letter-spacing:-.01em;margin-bottom:0;">
+    THE MULTILINGUAL<br><span style="color:var(--red)">TREND RADAR.</span>
+  </h2>
+
+  <div class="radar-intro rv" style="margin-top:28px;">
+    <p>
+      <strong>OFF/BEAT's edge is seeing what's coming before it arrives.</strong>
+      Most trend tools are English-first, algorithm-lagged, and brand-blind.
+      This tool scans Indian cultural signals across language registers —
+      the kind of signals that live in Hinglish WhatsApp forwards, Marathi reels,
+      and Urdu poetry pages before they ever reach an English feed.
+      <br><br>
+      I built this. It runs live. Select a vertical and hit scan.
+    </p>
+  </div>
+
+  <div class="radar-box rv">
+    <div class="radar-header">
+      <div class="radar-header-left">
+        <div class="radar-dot"></div>
+        <div>
+          <div class="radar-title">OFF/BEAT CULTURAL SIGNAL RADAR — v0.1</div>
+          <div class="radar-subtitle">AUTHORED: SEHER SIDDIQUI · LIVE AI INFERENCE</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="radar-controls">
+      <button class="radar-btn active" data-cat="youth-culture">YOUTH CULTURE</button>
+      <button class="radar-btn" data-cat="music-audio">MUSIC & AUDIO</button>
+      <button class="radar-btn" data-cat="fashion-identity">FASHION & IDENTITY</button>
+      <button class="radar-btn" data-cat="digital-behaviour">DIGITAL BEHAVIOUR</button>
+      <button class="run-btn" id="run-btn">RUN SCAN →</button>
+    </div>
+
+    <div class="radar-output" id="radar-output">
+      <div class="radar-empty" id="radar-empty">
+        <div class="radar-empty-icon">◉</div>
+        <p>SELECT A VERTICAL ABOVE<br>AND HIT RUN SCAN<br><br>LIVE AI INFERENCE — RESULTS IN ~15 SECONDS</p>
+      </div>
+      <div class="radar-loading" id="radar-loading">
+        <div class="loading-bar"><div class="loading-fill" id="load-fill"></div></div>
+        <div class="loading-txt">SCANNING <span id="load-cat">YOUTH CULTURE</span> SIGNALS…</div>
+      </div>
+      <div class="signals-list" id="signals-list" style="display:none;"></div>
+    </div>
+
+    <div class="radar-footer">
+      <div class="radar-footer-txt">POWERED BY <strong>Gemini AI</strong> · SEHER SIDDIQUI · OFF/BEAT APPLICATION 2026</div>
+      <div class="radar-footer-txt" id="radar-time" style="display:none;"></div>
+    </div>
+  </div>
+</section>
+
+<div class="s-rule"></div>
+
+<!-- ══════════════════════════════════════════
+     BRIEF
+══════════════════════════════════════════ -->
+<section id="brief-sec">
+  <span class="s-label rv">IF I JOINED TOMORROW</span>
+
+  <h2 class="rv" style="font-family:'Anton',sans-serif;font-size:clamp(36px,6vw,86px);line-height:1;letter-spacing:-.01em;margin-bottom:48px;">
+    THE FIRST<br><span style="color:var(--red)">90 DAYS.</span>
+  </h2>
+
+  <div class="brief-document rv">
+    <div class="brief-doc-header">
+      <span class="brief-doc-title">BRIEF #001 — ONBOARDING PLAN — SEHER SIDDIQUI</span>
+      <span class="brief-doc-date">FILED: 2026</span>
+    </div>
+    <div class="brief-body">
+
+      <div class="brief-row">
+        <div class="brief-field">OBJECTIVE</div>
+        <div class="brief-value">
+          Ship something real within 90 days. Not a proposal. Not a deck. A working system that changes how OFF/BEAT sees cultural signal.
+        </div>
+      </div>
+
+      <div class="brief-row">
+        <div class="brief-field">WEEK 1</div>
+        <div class="brief-value">
+          <div class="brief-timeline">
+            <div class="brief-tl-item">
+              <div class="brief-tl-day">DAY 1–2</div>
+              <div>
+                <div class="brief-tl-title">MAP THE PIPELINE</div>
+                <div class="brief-tl-body">Sit with the team. Understand every step from cultural observation to campaign brief. Find where signal is lost, slowed, or misread.</div>
+              </div>
+            </div>
+            <div class="brief-tl-item">
+              <div class="brief-tl-day">DAY 3–5</div>
+              <div>
+                <div class="brief-tl-title">BREAK ONE ASSUMPTION</div>
+                <div class="brief-tl-body">Present one thing the data doesn't support that everyone believes. Run the experiment. I've done this in oncology research. Same instinct, different domain.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="brief-row">
+        <div class="brief-field">MONTH 1</div>
+        <div class="brief-value">
+          <strong>Build: Multilingual Signal Layer.</strong> An NLP system monitoring Indian youth culture in Hindi, Hinglish, Urdu, Marathi — surface emerging aesthetics <strong>2–3 weeks before</strong> the algorithm catches them. The Trend Radar above is proof the architecture works.
+          <br><br>
+          <span class="tag">PYTHON</span><span class="tag">NLP</span><span class="tag">TRANSFORMERS</span><span class="tag">HINDI/URDU/MARATHI</span><span class="tag">REAL-TIME</span>
+        </div>
+      </div>
+
+      <div class="brief-row">
+        <div class="brief-field">MONTH 3</div>
+        <div class="brief-value">
+          Turn it into an internal product the team uses for every brief. Not a dashboard that gets glanced at — a system that becomes the first step in every campaign. I've built systems that handle <strong>100,000+ data points in real-time</strong>. Scaling isn't the hard part. Making it indispensable is.
+        </div>
+      </div>
+
+      <div class="brief-row">
+        <div class="brief-field">SUCCESS METRIC</div>
+        <div class="brief-value">
+          OFF/BEAT references a signal I surfaced before it went mainstream. Even once. That's the proof of concept.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="s-rule"></div>
+
+<!-- ══════════════════════════════════════════
+     PROOF
+══════════════════════════════════════════ -->
+<section id="proof-sec">
+  <span class="s-label rv">04 — THE RECEIPTS</span>
+  <h2 class="rv" style="font-family:'Anton',sans-serif;font-size:clamp(36px,6vw,86px);line-height:1;letter-spacing:-.01em;">I DON'T CLAIM.<br><span style="color:var(--red)">I BUILD.</span></h2>
+
+  <div class="proof-items">
+
+    <a class="proof-row" href="https://www.asco.org/abstracts-presentations/250486" target="_blank" rel="noopener">
+      <div>
+        <div class="proof-name">ASCO ONCOLOGY ML</div>
+        <div class="proof-sub">ML prediction on <span class="n">50GB+</span> clinical datasets. <span class="n">85%</span> accuracy. <span class="n">30%</span> error reduction. Selected from <span class="n">7,500+</span> global submissions to present at the American Society of Clinical Oncology 2025. My models informed decisions for real cancer patients. Stakes don't get higher.</div>
+        <span class="proof-link-label">ascopubs.org — ASCO 2025 ↗</span>
+      </div>
+      <div class="proof-right">
+        <div class="proof-badge">PUBLISHED 2025</div>
+        <div class="proof-arrow">→</div>
+      </div>
+    </a>
+
+    <a class="proof-row" href="https://github.com/esss-28" target="_blank" rel="noopener">
+      <div>
+        <div class="proof-name">AI COLLAB PLATFORM</div>
+        <div class="proof-sub">Distributed system. <span class="n">100+</span> concurrent users. Sub-<span class="n">100ms</span> sync. WebSockets + microservices + OpenAI API powering real-time code suggestions. Built to win. Won.</div>
+        <span class="proof-link-label">github.com/esss-28 ↗</span>
+      </div>
+      <div class="proof-right">
+        <div class="proof-badge">HACKATHON WIN</div>
+        <div class="proof-arrow">→</div>
+      </div>
+    </a>
+
+    <a class="proof-row" href="https://github.com/esss-28" target="_blank" rel="noopener">
+      <div>
+        <div class="proof-name">FAKE NEWS DETECTOR</div>
+        <div class="proof-sub"><span class="n">100,000+</span> articles. Real-time parallel NLP. <span class="n">77%</span> accuracy in authenticity classification. In India's media climate, this isn't a hackathon project — it's infrastructure. Top <span class="n">100</span> of <span class="n">5,611</span> teams nationwide.</div>
+        <span class="proof-link-label">github.com/esss-28 — TruthTell · WAVES '25 ↗</span>
+      </div>
+      <div class="proof-right">
+        <div class="proof-badge">TOP 100 / 5,611</div>
+        <div class="proof-arrow">→</div>
+      </div>
+    </a>
+
+    <a class="proof-row" href="https://codeinplace.stanford.edu" target="_blank" rel="noopener">
+      <div>
+        <div class="proof-name">STANFORD — SECTION LEADER</div>
+        <div class="proof-sub">Selected from <span class="n">2,000+</span> global applicants. Second-highest position in Stanford's Code in Place program. Mentored <span class="n">30+</span> students. Teaching is how I know I actually understand something.</div>
+        <span class="proof-link-label">codeinplace.stanford.edu ↗</span>
+      </div>
+      <div class="proof-right">
+        <div class="proof-badge">STANFORD 2025</div>
+        <div class="proof-arrow">→</div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CLOSING
+══════════════════════════════════════════ -->
+<section id="closing">
+  <div class="closing-glow"></div>
+
+  <span class="closing-eyebrow rv">FINAL STATEMENT</span>
+
+  <div class="closing-line1" id="cl1">THE OTHER</div>
+  <div class="closing-line2" id="cl2">2 PEOPLE</div>
+  <div class="closing-line3" id="cl3">SENT A RESUME.</div>
+
+  <div class="closing-separator" id="cl-sep"></div>
+
+  <div class="closing-bottom" id="cl-bottom">
+    <div class="closing-sig">
+      <strong>SEHER SIDDIQUI</strong>
+      OFF/BEAT STUDIOS · APPLICATION 2026<br>
+      Mumbai, India · Open to Relocate
+    </div>
+    <div class="closing-actions">
+      <a class="c-btn primary" href="mailto:sehersiddiqui2812@gmail.com">EMAIL ME</a>
+      <a class="c-btn primary" href="https://www.linkedin.com/in/seher-siddiqui-76041b234/" target="_blank" rel="noopener">LINKEDIN</a>
+      <a class="c-btn ghost" href="https://github.com/esss-28" target="_blank" rel="noopener">GITHUB</a>
+      <a class="c-btn ghost" href="tel:+917208209576">+91 72082 09576</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════ -->
+<script>
+/* ── CURSOR ── */
+const cur = document.getElementById('cur');
+const ring = document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+(function animR(){
+  rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animR);
+})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    cur.style.transform='translate(-50%,-50%) scale(2.5)';
+    ring.style.width='54px'; ring.style.height='54px';
+  });
+  el.addEventListener('mouseleave',()=>{
+    cur.style.transform='translate(-50%,-50%) scale(1)';
+    ring.style.width='36px'; ring.style.height='36px';
+  });
+});
+
+/* ── SCROLL REVEAL ── */
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); }
+  });
+},{threshold:0.1});
+document.querySelectorAll('.rv,.rv-left,.brief-row,.proof-row').forEach((el,i)=>{
+  if(el.classList.contains('brief-row')||el.classList.contains('proof-row')){
+    el.style.transitionDelay=(i%6*.08)+'s';
+  }
+  obs.observe(el);
+});
+
+/* ── CLOSING PARALLAX ── */
+const closingObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      ['cl1','cl2','cl3'].forEach((id,i)=>{
+        setTimeout(()=>document.getElementById(id).classList.add('in'),i*120);
+      });
+      setTimeout(()=>document.getElementById('cl-sep').classList.add('in'),500);
+      setTimeout(()=>document.getElementById('cl-bottom').classList.add('in'),700);
+      closingObs.disconnect();
+    }
+  });
+},{threshold:0.15});
+closingObs.observe(document.getElementById('closing'));
+
+/* ── RADAR CAT BUTTONS ── */
+let activeCat = 'youth-culture';
+document.querySelectorAll('.radar-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.radar-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCat = btn.dataset.cat;
+  });
+});
+
+/* ── RADAR RUN ── */
+const runBtn = document.getElementById('run-btn');
+const radarEmpty = document.getElementById('radar-empty');
+const radarLoading = document.getElementById('radar-loading');
+const signalsList = document.getElementById('signals-list');
+const loadCat = document.getElementById('load-cat');
+const radarTime = document.getElementById('radar-time');
+
+const catLabels = {
+  'youth-culture':'YOUTH CULTURE',
+  'music-audio':'MUSIC & AUDIO',
+  'fashion-identity':'FASHION & IDENTITY',
+  'digital-behaviour':'DIGITAL BEHAVIOUR'
+};
+
+const SYSTEM_PROMPT = `You are the OFF/BEAT Cultural Signal Radar — an AI tool built by Seher Siddiqui for boAt's OFF/BEAT Studios internship application.
+
+Your job: identify 5 real, specific, under-the-radar cultural signals in Indian youth culture that are rising RIGHT NOW in 2026 but haven't broken mainstream yet. These signals should be visible in vernacular spaces — Hinglish, Hindi, Urdu, Marathi social media, meme culture, music, fashion, digital behaviour — not in English mainstream media.
+
+You MUST respond with ONLY a valid JSON array. No preamble, no explanation, no markdown fences. Just the raw JSON array.
+
+Format exactly:
+[
+  {
+    "name": "SIGNAL NAME IN CAPS (3-5 words max)",
+    "heat": 78,
+    "platform": "WHERE IT LIVES",
+    "desc": "2-3 sharp sentences. What is it. Who's doing it. Why it matters for a brand like boAt/OFF/BEAT.",
+    "brand_angle": "One specific, actionable thing OFF/BEAT could do with this signal."
+  }
+]
+
+Rules:
+- heat is a number 55-95 (0-100 scale of how close to mainstream breakthrough)
+- Be specific. Real slang, real platforms, real behaviours. Not generic.
+- The category vertical for this scan is: {{CATEGORY}}
+- All 5 signals must be distinct
+- Signals should be things happening NOW in 2026, not 2023 trends`;
+
+async function runRadar() {
+  runBtn.disabled = true;
+  runBtn.textContent = 'SCANNING…';
+
+  radarEmpty.classList.add('hide');
+  signalsList.style.display = 'none';
+  radarLoading.classList.add('show');
+  radarTime.style.display = 'none';
+
+  // reset loading bar animation
+  const fill = document.getElementById('load-fill');
+  fill.style.animation = 'none';
+  fill.offsetHeight; // reflow
+  fill.style.animation = 'load-anim 14s ease forwards';
+
+  loadCat.textContent = catLabels[activeCat] || activeCat.toUpperCase();
+
+  const prompt = SYSTEM_PROMPT.replace('{{CATEGORY}}', catLabels[activeCat]);
+
+  const t0 = Date.now();
+
+  try {
+    const res = await fetch('/api/scan', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    prompt: prompt + `\n\nRun a cultural signal scan for: ${catLabels[activeCat]}. Return only the JSON array.`
+  })
+});
+
+    const data = await res.json();
+    const raw = data.choices?.[0]?.message?.content || '[]';
+
+    let signals;
+    try {
+      const cleaned = raw.replace(/```json|```/g,'').trim();
+      signals = JSON.parse(cleaned);
+    } catch(e) {
+      throw new Error('Parse failed: ' + raw.substring(0,80));
+    }
+
+    const elapsed = ((Date.now()-t0)/1000).toFixed(1);
+
+    radarLoading.classList.remove('show');
+    signalsList.innerHTML = '';
+    signalsList.style.display = 'flex';
+
+    signals.forEach((sig,i)=>{
+      const item = document.createElement('div');
+      item.className = 'signal-item';
+      item.innerHTML = `
+        <div class="signal-num">0${i+1}</div>
+        <div class="signal-body">
+          <div class="signal-name">${sig.name||'UNNAMED SIGNAL'}</div>
+          <div class="signal-desc">${sig.desc||''} <strong>${sig.brand_angle||''}</strong></div>
+          <div class="signal-meta">PLATFORM: ${sig.platform||'UNKNOWN'}</div>
+        </div>
+        <div class="signal-heat">
+          <div class="heat-label">HEAT</div>
+          <div class="heat-bar"><div class="heat-fill" style="width:${sig.heat||70}%"></div></div>
+          <div class="heat-label" style="color:var(--red);font-size:11px;font-weight:700">${sig.heat||70}</div>
+        </div>`;
+      signalsList.appendChild(item);
+      setTimeout(()=>item.classList.add('show'), 100+i*120);
+    });
+
+    radarTime.style.display = 'block';
+    radarTime.innerHTML = `SCAN COMPLETE · <strong>${elapsed}s</strong>`;
+
+  } catch(err) {
+    radarLoading.classList.remove('show');
+    signalsList.style.display = 'flex';
+    signalsList.innerHTML = `<div style="padding:40px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.15em;line-height:1.8;">
+      SCAN FAILED — API ERROR<br><br>
+      <span style="color:rgba(240,237,232,.25);font-size:10px">${err.message}</span>
+    </div>`;
+  }
+
+  runBtn.disabled = false;
+  runBtn.textContent = 'RUN SCAN →';
+}
+
+runBtn.addEventListener('click', runRadar);
+</script>
+</body>
+</html>
