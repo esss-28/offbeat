@@ -21,5 +21,3 @@ export default async function handler(req, res) {
   const data = await response.json();
   res.status(200).json(data);
 }
-
-// https://github.com/esss-28/offbeat
